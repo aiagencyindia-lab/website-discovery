@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ENewBharat · Website Discovery — AIxAI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#282C30; --ink-soft:#4A4F55; --muted:#8A867E;
+    --bg:#F6F5F2; --card:#FFFFFF; --line:#E5E2DB;
+    --accent:#C8641B; --accent-soft:#FBF1E8;
+    --ok:#2E7D52;
+    --r:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:Inter,system-ui,'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--ink);
+       -webkit-font-smoothing:antialiased;line-height:1.55}
+  ::selection{background:var(--accent-soft)}
+
+  /* ---------- header ---------- */
+  header{position:sticky;top:0;z-index:20;background:rgba(246,245,242,.92);backdrop-filter:blur(8px);
+         border-bottom:1px solid var(--line)}
+  .hwrap{max-width:1060px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:12px}
+  .logo{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--ink)}
+  .logo svg{display:block;height:26px;width:auto;flex:none}
+  .logo .name{font-weight:700;letter-spacing:2px;font-size:20px;line-height:1;transform:translateY(1px);white-space:nowrap}
+  @media(max-width:620px){
+    .logo .name{font-size:17px;letter-spacing:1.5px}
+    .logo svg{height:22px}
+    .hprog #progText{display:none}
+    .bar{width:64px}
+  }
+  .hprog{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--muted)}
+  .bar{width:130px;height:5px;background:var(--line);border-radius:99px;overflow:hidden}
+  .bar i{display:block;height:100%;width:0%;background:var(--accent);border-radius:99px;transition:width .35s ease}
+
+  /* ---------- layout ---------- */
+  .shell{max-width:1060px;margin:0 auto;padding:34px 20px 90px;display:grid;grid-template-columns:236px 1fr;gap:36px}
+  @media(max-width:900px){.shell{grid-template-columns:1fr;gap:18px}}
+
+  /* sidebar */
+  nav.steps{position:sticky;top:82px;align-self:start}
+  @media(max-width:900px){nav.steps{display:none}}
+  .steps ol{list-style:none;margin:0;padding:0}
+  .steps li{padding:7px 12px;border-radius:9px;font-size:13px;color:var(--muted);cursor:pointer;
+            display:flex;align-items:center;gap:8px;transition:background .15s}
+  .steps li:hover{background:#EFEDE8}
+  .steps li.active{background:var(--ink);color:#fff;font-weight:600}
+  .steps li.done:not(.active){color:var(--ink-soft)}
+  .steps li .dot{width:7px;height:7px;border-radius:50%;background:var(--line);flex:none}
+  .steps li.done .dot{background:var(--ok)}
+  .steps li.active .dot{background:var(--accent)}
+
+  /* main card */
+  .panel{min-width:0}
+  .stephead{margin-bottom:18px}
+  .stephead .kicker{font-size:12px;letter-spacing:1.6px;text-transform:uppercase;color:var(--accent);font-weight:600}
+  .stephead h1{font-family:Fraunces,Georgia,serif;font-size:31px;margin:6px 0 6px;font-weight:600;line-height:1.2}
+  .stephead p{margin:0;color:var(--muted);font-size:14.5px}
+
+  .qcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+         padding:20px 22px;margin-bottom:14px;transition:border-color .2s}
+  .qcard:focus-within{border-color:#C9C4BA}
+  .qcard.star{border:1.5px solid var(--accent);background:linear-gradient(180deg,#FFFDFB, #FFF9F4)}
+  .qtop{display:flex;align-items:flex-start;gap:14px}
+  .qtext{flex:1;min-width:0}
+  .qtext .q{font-weight:600;font-size:15.5px}
+  .qtext .hint{color:var(--muted);font-size:13px;margin-top:3px}
+  .starbadge{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;
+             font-size:11px;font-weight:700;letter-spacing:.8px;padding:3px 10px;border-radius:99px;
+             text-transform:uppercase;margin-bottom:8px}
+
+  /* agency toggle */
+  .agency{flex:none;display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none;
+          border:1px solid var(--line);border-radius:99px;padding:5px 12px;font-size:12px;color:var(--muted);
+          transition:all .18s;white-space:nowrap;background:#FBFAF8}
+  .agency:hover{border-color:var(--accent)}
+  .agency.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .agency svg{width:12px;height:12px}
+  @media(max-width:620px){.qtop{flex-direction:column}.agency{align-self:flex-start}}
+
+  .qbody{margin-top:14px}
+  .qcard.deferred .qbody{opacity:.35;pointer-events:none;max-height:64px;overflow:hidden}
+  .defnote{display:none;margin-top:12px;font-size:13px;color:var(--accent);font-weight:500}
+  .qcard.deferred .defnote{display:block}
+
+  /* choices */
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{border:1px solid var(--line);background:#fff;border-radius:99px;padding:8px 16px;font-size:13.5px;
+        cursor:pointer;user-select:none;transition:all .15s;color:var(--ink-soft)}
+  .chip:hover{border-color:var(--ink)}
+  .chip.sel{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:500}
+
+  textarea,input[type=text],input[type=email]{
+    width:100%;border:1px solid var(--line);border-radius:10px;background:#FDFDFC;
+    padding:11px 13px;font:inherit;font-size:14px;color:var(--ink);outline:none;transition:border .15s}
+  textarea:focus,input:focus{border-color:var(--ink)}
+  textarea{min-height:88px;resize:vertical}
+  .detail{margin-top:10px}
+  .detail label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
+
+  /* contact grid */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:620px){.grid2{grid-template-columns:1fr}}
+  .field label{font-size:13px;font-weight:600;display:block;margin-bottom:6px}
+  .field .req{color:var(--accent)}
+
+  /* footer nav */
+  .navrow{display:flex;gap:12px;margin-top:26px;align-items:center}
+  button{font:inherit;cursor:pointer;border-radius:10px;padding:12px 26px;font-size:14.5px;font-weight:600;
+         border:1px solid var(--line);background:#fff;color:var(--ink);transition:all .15s}
+  button:hover{border-color:var(--ink)}
+  button.primary{background:var(--ink);border-color:var(--ink);color:#fff}
+  button.primary:hover{background:#000}
+  button.submitbtn{background:var(--accent);border-color:var(--accent);color:#fff}
+  button.submitbtn:hover{filter:brightness(.93)}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  .navrow .spacer{flex:1}
+  .savenote{font-size:12px;color:var(--muted)}
+
+  /* intro + done */
+  .hero{background:var(--ink);color:#fff;border-radius:20px;padding:44px 42px;margin-bottom:26px;position:relative;overflow:hidden}
+  .hero h1{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:36px;margin:0 0 12px;line-height:1.15}
+  .hero p{color:#C9CCCF;max-width:540px;font-size:15px;margin:0 0 6px}
+  .hero .mark{position:absolute;right:-40px;bottom:-60px;opacity:.08;transform:rotate(-6deg)}
+  .hero .chip-note{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);
+                   border:1px solid rgba(255,255,255,.18);padding:7px 14px;border-radius:99px;font-size:12.5px;margin-top:16px;color:#EDE9E2}
+  @media(max-width:620px){.hero{padding:30px 24px}.hero h1{font-size:27px}}
+
+  .done{ text-align:center;padding:70px 20px}
+  .done .tick{width:74px;height:74px;border-radius:50%;background:var(--ok);color:#fff;font-size:34px;
+              display:flex;align-items:center;justify-content:center;margin:0 auto 22px}
+  .done h1{font-family:Fraunces,Georgia,serif;font-size:32px;margin:0 0 10px}
+  .done p{color:var(--muted);max-width:440px;margin:0 auto}
+
+  .errmsg{background:#FCEEEA;border:1px solid #EAC7BC;color:#8A3A22;border-radius:10px;padding:12px 16px;
+          font-size:13.5px;margin-top:14px;display:none}
+  .qcard.unanswered{border-color:#C4523A;box-shadow:0 0 0 3px rgba(196,82,58,.08)}
+  .steps li.locked{opacity:.45;cursor:default}
+  .steps li.locked:hover{background:transparent}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hwrap">
+    <a class="logo" href="#">
+      <svg viewBox="625 207 809 729" xmlns="http://www.w3.org/2000/svg" aria-label="AIxAI logo">
+        <path fill="#282C30" d="M 625.497 207.751 C 656.651 207.201 689.19 207.712 720.431 207.891 C 750.377 234.363 784.353 270.972 813.133 299.322 L 1044.9 530.413 L 1107.18 592.771 C 1118.12 603.671 1130.64 616.924 1142.14 626.776 C 1175.85 606.816 1209.76 587.179 1243.85 567.869 C 1261.29 557.912 1285.32 545.139 1301.54 534.521 C 1318.08 533.783 1337.64 534.234 1354.36 534.218 C 1380.57 534.074 1406.79 534.125 1433 534.37 C 1402.99 549.651 1362 574.948 1332.31 592.057 C 1284.22 619.19 1236.35 646.716 1188.7 674.633 C 1231.06 715.904 1272.16 758.729 1314.57 799.985 C 1324.34 809.494 1336.37 820.771 1344.85 831.252 C 1344.11 807.727 1344.61 781.937 1344.61 758.281 L 1344.65 628.25 C 1368.43 612.981 1393.92 600.693 1418.03 585.141 C 1419.48 622.239 1418.3 668.437 1418.28 706.122 L 1418.27 935.308 L 1345.96 935.303 C 1326.52 917.407 1305.72 894.387 1286.36 875.504 C 1231.78 822.271 1178.34 764.726 1123.43 712.041 C 1076.99 739.355 1030.36 766.351 983.545 793.028 C 921.996 827.505 861.172 864.294 799.527 898.851 C 780.742 909.382 755.291 926.548 735.54 934.505 C 731.78 936.02 704.33 935.483 698.603 935.463 L 629.435 935.26 C 628.748 908.77 629.405 879.485 629.404 852.758 L 629.344 690.584 L 629.26 235.789 C 653.111 260.375 679.876 286.56 702.745 311.52 L 703.266 881.283 C 811.869 819.763 919.085 754.789 1027.79 693.318 C 1044.25 684.007 1060.78 674.429 1076.95 664.637 C 1069.18 657.936 1058.98 647.256 1051.36 639.7 L 1000.03 588.105 L 865.339 452.914 C 805.822 393.984 746.837 334.519 688.391 274.526 C 676.726 262.515 632.812 219.056 625.497 207.751 z"/>
+      </svg>
+      <span class="name">AIxAI</span>
+    </a>
+    <div class="hprog">
+      <span id="progText">Getting started</span>
+      <div class="bar"><i id="progFill"></i></div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="steps"><ol id="stepList"></ol></nav>
+  <main class="panel" id="panel"></main>
+</div>
+
+<script>
+/* ============================================================
+   QUESTION SCHEMA
+   types: single | multi | text | textarea
+   every question automatically gets a "Leave it to AIxAI" toggle
+   ============================================================ */
+const AGENCY_LABEL = "Leave it to AIxAI";
+
+const SECTIONS = [
+{ id:"about", title:"About Your Business", desc:"First, help us understand who you are and what you do.",
+  qs:[
+  { q:"In simple words, what does your business do and sell?", type:"textarea", noAgency:true,
+    hint:"Two or three lines are perfect." },
+  { q:"Why do you want to sell online? What are you hoping to achieve?", type:"multi", noAgency:true,
+    options:["Reach more customers","Sell across India","Sell internationally","Extra income","Build the brand","Take my existing shop online"], other:true },
+  { q:"Do you already have an online presence?", type:"multi", noAgency:true,
+    options:["Own website","Instagram","Facebook","WhatsApp Business","Amazon","Flipkart","None yet"],
+    detail:"Please share the links / handles" },
+  { q:"Do you already have a logo and brand colours?", type:"single",
+    options:["Yes — logo and colours ready","Only a logo","Nothing yet — need design help"],
+    detail:"Anything you'd like to tell us about the look you want" },
+]},
+
+{ id:"products", title:"Your Products", desc:"The heart of the store — what you sell and how it's organised.",
+  qs:[
+  { star:true, noAgency:true,
+    q:"Which categories of handicraft products will you sell?", type:"multi",
+    hint:"This is the most important question in the whole form — your categories shape the entire website structure. Select everything that applies.",
+    options:["Pottery","Blue pottery","Terracotta","Jewellery — Thewa","Jewellery — Minakari","Paintings","Idols","Sculptures","Marble / stone craft","Woodwork / carving","Metal craft (brass, copper)","Home décor","Textiles / weaves","Handloom / carpets & dhurries","Leather craft (mojari, bags)","Lac bangles / lacquerware","Bamboo / cane craft","Puppets & wooden toys"], other:true,
+    detail:"Now the detail we really need: under each category, list the sub-types / art forms (e.g. Paintings → Miniature, Pichwai, Madhubani), roughly how many products in each, and whether new categories will keep getting added over time.", detailRequired:true },
+  { q:"How should products be grouped into categories and sub-categories on the website menu?", type:"textarea", noAgency:true,
+    hint:"e.g. Jewellery → Thewa, Minakari · Paintings → by style or by region?" },
+  { q:"Roughly how many products will you have at launch?", type:"single", noAgency:true,
+    options:["Under 50","50 – 200","200 – 500","500+","Not sure yet"], other:true,
+    otherLabel:"Your estimate (approx. number of products)" },
+  { q:"For a typical product, what information should customers see?", type:"multi",
+    options:["Photos","Price","Size / dimensions","Weight","Material","Artisan / maker story","Region / origin (GI tag)","Certification / authenticity","Care instructions"], other:true },
+  { q:"Do products come in options — like size, colour or metal?", type:"single",
+    options:["Yes, many do","A few products","No"],
+    detail:"Give an example (e.g. a painting in 3 sizes, jewellery in silver / gold-plated)" },
+  { q:"Do you sell sets, combos or gift hampers?", type:"single",
+    options:["Yes","No","Maybe later"], detail:"Examples, if yes" },
+  { q:"Do you sell add-ons? (gift wrapping, message card, display stand…)", type:"single",
+    options:["Yes","No","Not sure"], detail:"Which add-ons?" },
+  { q:"Are any products special to handle?", type:"multi",
+    options:["Fragile (pottery, sculpture)","High-value (jewellery)","Certified / authenticated pieces","Made-to-order pieces","None of these"],
+    detail:"Anything we should know about packing or insurance" },
+  { q:"Do you offer bulk / wholesale orders or bulk pricing?", type:"single",
+    options:["Yes","No","Interested — advise us"] },
+]},
+
+{ id:"customers", title:"Your Customers", desc:"Who are we designing this store for?",
+  qs:[
+  { q:"Who is your typical customer?", type:"textarea", noAgency:true,
+    hint:"Age, where they live, art lovers / gifting / collectors / NRIs…" },
+  { q:"Will you sell only within India, or to other countries too?", type:"single", noAgency:true,
+    options:["India only","Mostly India, some international","Fully international"],
+    detail:"If international — which countries matter most?" },
+]},
+
+{ id:"selling", title:"How You Want to Sell", desc:"This decides the overall shape of your store.",
+  qs:[
+  { q:"Should sellers sign up themselves (with your approval), or will you add them yourself?", type:"single",
+    options:["They register, we approve","We add them ourselves","Both"] },
+  { q:"What commission or fee will you take from each sale?", type:"single",
+    options:["Flat fee per sale","% of the order","% varies by category","No commission","Need advice"],
+    detail:"Numbers, if you have them in mind" },
+  { q:"Who ships the products to customers?", type:"single",
+    options:["We ship everything centrally","Each seller ships their own orders","Courier picks up from each seller","Need advice"] },
+  { q:"How will sellers get paid, and how often?", type:"single",
+    options:["Weekly","Monthly","After the return window closes","Need advice"],
+    detail:"Any minimum payout amount or other rules" },
+]},
+
+{ id:"experience", title:"The Customer Experience", desc:"How shoppers browse and interact with your store.",
+  qs:[
+  { q:"Do you want customer reviews and star ratings on products?", type:"single",
+    options:["Yes","Yes, but we approve reviews before they appear","No"] },
+  { q:"Do you want a rewards / loyalty or refer-a-friend scheme?", type:"single",
+    options:["Loyalty points","Refer-a-friend","Both","Neither","Maybe later"] },
+  { q:"Should customers be able to cancel or return an order themselves from their account?", type:"single",
+    options:["Yes — both cancel and return","Cancel only","No — they should contact us","Need advice"] },
+]},
+
+{ id:"cart", title:"Cart, Checkout & Offers", desc:"From choosing a product to placing the order.",
+  qs:[
+  { q:"Do you want discount / coupon codes? What kinds?", type:"multi",
+    options:["% off","Flat amount off","First-order discount","Festival offers","Free gift","No coupons"] },
+  { q:"Minimum order value or free delivery above an amount?", type:"single",
+    options:["Free delivery above an amount","Minimum order value","Both","Neither"],
+    detail:"The amounts, if decided" },
+  { q:"Should customers be able to add a gift message or special instruction?", type:"single",
+    options:["Yes","No","Nice to have"] },
+  { q:"Anything else customers should be able to do before paying?", type:"textarea" },
+]},
+
+{ id:"payments", title:"Payments", desc:"How you collect money from customers.",
+  qs:[
+  { q:"Do you want Cash on Delivery?", type:"single", noAgency:true,
+    options:["Yes, everywhere","Yes, with limits","No"],
+    detail:"Limits / areas where COD is not allowed" },
+  { q:"Do you have a payment gateway / business bank account, or need help setting one up?", type:"single",
+    options:["Have a payment gateway already","Have a business bank account only","Need help with both"],
+    detail:"Which gateway / bank? (We commonly use Razorpay for India)" },
+  { q:"Do you need a GST invoice generated automatically for every order?", type:"single", noAgency:true,
+    options:["Yes","No","Not sure"] },
+  { q:"If there are multiple sellers — how should the money flow?", type:"single", noAgency:true,
+    options:["To us first, then we pay sellers","Split automatically at payment time","Need advice"] },
+]},
+
+{ id:"delivery", title:"Delivery & Shipping", desc:"Getting orders to customers.",
+  qs:[
+  { q:"Where will you deliver?", type:"single", noAgency:true,
+    options:["All over India","Only certain states / pin codes","All India + international"],
+    detail:"Details, if limited or international" },
+  { q:"Who will handle delivery?", type:"single", noAgency:true,
+    options:["Courier aggregator (Shiprocket, etc.)","A specific courier company","India Post","Our own delivery","Recommend one for us"],
+    detail:"Name it, if you have one" },
+  { q:"How should delivery charges work?", type:"single",
+    options:["One flat fee","Based on weight","Based on location","Free above an amount","A combination","Recommend for us"],
+    detail:"The amounts / rules, if decided" },
+]},
+
+{ id:"returns", title:"Returns, Refunds & Cancellations", desc:"What happens after an order — your policies.",
+  qs:[
+  { q:"Do you accept returns or exchanges?", type:"single",
+    options:["Yes — returns and exchanges","Exchanges only","No returns","Depends on the product"],
+    detail:"Within how many days?" },
+  { q:"Which items cannot be returned?", type:"textarea",
+    hint:"e.g. made-to-order art, jewellery, personalised pieces" },
+  { q:"How will you give refunds?", type:"single",
+    options:["Back to the original payment method","Store credit","Bank transfer","A mix — depends"] },
+  { q:"Until what point can a customer cancel an order?", type:"single",
+    options:["Until it ships","Within a few hours of ordering","Anytime before delivery","Need advice"] },
+  { q:"Do you have written policies, or need help preparing them?", type:"single",
+    options:["Have them all","Have some","Need help drafting"] },
+]},
+
+{ id:"legal", title:"Taxes, Invoicing & Legal", desc:"The compliance and paperwork side.",
+  qs:[
+  { q:"Are your prices inclusive of GST, or should GST be added at checkout?", type:"single",
+    options:["Inclusive of GST","Add GST at checkout","Not sure"] },
+  { q:"What GST rates apply to your products?", type:"textarea",
+    hint:"If not sure, write “advise us” — handicraft rates vary by item" },
+  { q:"Registered business name, GST number and address for invoices?", type:"textarea" },
+  { q:"Terms & Conditions, Privacy Policy and Return Policy — written, or need help?", type:"single",
+    options:["Have all of them","Have some","Need help drafting"] },
+  { q:"Any legal, age or sensitivity restrictions on any products?", type:"textarea" },
+]},
+
+{ id:"pages", title:"Pages & Content", desc:"The information and pages your website will contain.",
+  qs:[
+  { q:"Besides the shop, which pages do you want?", type:"multi",
+    options:["About Us","Contact","Our Story / Artisans","Blog","FAQ","Track Order","Bulk / Corporate enquiry","Gallery / Lookbook"], other:true },
+  { q:"Do you want a blog / articles section? (art stories, craft heritage…)", type:"single",
+    options:["Yes","No","Maybe later"] },
+  { q:"What should the home page highlight, in order of importance?", type:"textarea",
+    hint:"e.g. 1) featured products 2) categories 3) offers 4) brand story 5) testimonials" },
+  { q:"Do you have photos, videos or written content ready for the About / home pages?", type:"single",
+    options:["Photos and text ready","Photos only","Text only","Very little — need help"],
+    detail:"Note: the current About Us page is quite vague — what should it actually say?" },
+]},
+
+{ id:"marketing", title:"Marketing & Staying in Touch", desc:"How customers hear from you.",
+  qs:[
+  { q:"Do you want to send offers / newsletters to customers?", type:"multi",
+    options:["Email","WhatsApp","SMS","None"] },
+]},
+
+{ id:"golive", title:"Domain, Accounts & Going Live", desc:"The technical bits — mostly about ownership. We handle the setup.",
+  qs:[
+  { q:"What web address (domain) do you want? Do you already own it?", type:"textarea", noAgency:true,
+    hint:"Apart from enewbharat.in — and should any other domains redirect to it?" },
+  { q:"Do you have website hosting, or should we arrange it?", type:"single", noAgency:true,
+    options:["We have hosting","You arrange it","Not sure"] },
+  { q:"Do you want a business email address? (e.g. info@enewbharat.in)", type:"single",
+    options:["Have one already","Yes, set one up","Not needed"] },
+  { q:"Accounts for payment gateway, image storage etc. — do you have them, or should we set them up in your name?", type:"single",
+    options:["We have the accounts","Set them up in our name","A mix — let's discuss"] },
+]},
+
+{ id:"else", title:"Anything Else", desc:"Your space to tell us what we haven't asked.",
+  qs:[
+  { q:"Are there websites you love (or dislike)? What appeals to you about them?", type:"textarea", noAgency:true },
+  { q:"Is there anything special or unique about your business we should know?", type:"textarea", noAgency:true },
+  { q:"Anything else on your mind — ideas, worries, must-haves?", type:"textarea", noAgency:true },
+]},
+];
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const LS_KEY = "aixai-charansparsh-discovery-v2";
+let state = { step: -1, maxStep: 0, answers:{} };
+try { const saved = JSON.parse(localStorage.getItem(LS_KEY)); if (saved && saved.answers) state = saved; } catch(e){}
+if (state.maxStep == null) state.maxStep = 0;
+
+function save(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+function ansKey(si,qi){ return si+"_"+qi; }
+function getAns(si,qi){
+  if(!state.answers[ansKey(si,qi)]) state.answers[ansKey(si,qi)] = {sel:[], text:"", detail:"", agency:false};
+  return state.answers[ansKey(si,qi)];
+}
+
+const TOTAL_STEPS = SECTIONS.length;
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+const panel = document.getElementById("panel");
+const stepList = document.getElementById("stepList");
+
+function pct(){
+  const done = Math.max(0, state.step + 1);
+  return Math.min(100, Math.round(done / (TOTAL_STEPS+1) * 100));
+}
+
+function renderSidebar(){
+  let html = "";
+  SECTIONS.forEach((s,i)=>{
+    const locked = i > state.maxStep;
+    html += `<li class="${state.step===i?'active':''} ${state.step>i?'done':''} ${locked?'locked':''}" onclick="go(${i})"><span class="dot"></span>${s.title}</li>`;
+  });
+  stepList.innerHTML = html;
+  document.getElementById("progFill").style.width = pct()+"%";
+  document.getElementById("progText").textContent =
+    state.step<0 ? "Getting started" :
+    state.step<SECTIONS.length ? `Section ${state.step+1} of ${SECTIONS.length}` : "Done";
+}
+
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+
+/* ---------- intro ---------- */
+function renderIntro(){
+  panel.innerHTML = `
+  <div class="hero">
+    <h1>Let's build the right<br>website for ENewBharat.</h1>
+    <p>You know your craft; we know the web. This short form walks through your products, customers, payments and delivery so we can architect your store around your real business — not guesses.</p>
+    <p style="margin-top:10px">It takes about <strong style="color:#fff">15–20 minutes</strong>. Your progress saves automatically in this browser, so you can leave and come back.</p>
+    <div class="chip-note">★&nbsp; Every question needs an answer, but most are quick multiple-choice. Not sure about one? Many have a “${AGENCY_LABEL}” option — pick it and we'll decide professionally on your behalf.</div>
+    <svg class="mark" viewBox="620 200 820 740" width="380" xmlns="http://www.w3.org/2000/svg"><path fill="#fff" d="M 625.497 207.751 C 656.651 207.201 689.19 207.712 720.431 207.891 C 750.377 234.363 784.353 270.972 813.133 299.322 L 1044.9 530.413 L 1107.18 592.771 C 1118.12 603.671 1130.64 616.924 1142.14 626.776 C 1175.85 606.816 1209.76 587.179 1243.85 567.869 C 1261.29 557.912 1285.32 545.139 1301.54 534.521 C 1318.08 533.783 1337.64 534.234 1354.36 534.218 C 1380.57 534.074 1406.79 534.125 1433 534.37 C 1402.99 549.651 1362 574.948 1332.31 592.057 C 1284.22 619.19 1236.35 646.716 1188.7 674.633 C 1231.06 715.904 1272.16 758.729 1314.57 799.985 C 1324.34 809.494 1336.37 820.771 1344.85 831.252 C 1344.11 807.727 1344.61 781.937 1344.61 758.281 L 1344.65 628.25 C 1368.43 612.981 1393.92 600.693 1418.03 585.141 C 1419.48 622.239 1418.3 668.437 1418.28 706.122 L 1418.27 935.308 L 1345.96 935.303 C 1326.52 917.407 1305.72 894.387 1286.36 875.504 C 1231.78 822.271 1178.34 764.726 1123.43 712.041 C 1076.99 739.355 1030.36 766.351 983.545 793.028 C 921.996 827.505 861.172 864.294 799.527 898.851 C 780.742 909.382 755.291 926.548 735.54 934.505 C 731.78 936.02 704.33 935.483 698.603 935.463 L 629.435 935.26 C 628.748 908.77 629.405 879.485 629.404 852.758 L 629.344 690.584 L 629.26 235.789 C 653.111 260.375 679.876 286.56 702.745 311.52 L 703.266 881.283 C 811.869 819.763 919.085 754.789 1027.79 693.318 C 1044.25 684.007 1060.78 674.429 1076.95 664.637 C 1069.18 657.936 1058.98 647.256 1051.36 639.7 L 1000.03 588.105 L 865.339 452.914 C 805.822 393.984 746.837 334.519 688.391 274.526 C 676.726 262.515 632.812 219.056 625.497 207.751 z"/></svg>
+  </div>
+  <div class="navrow">
+    <span class="spacer"></span>
+    <button class="primary" onclick="go(0)">Start &nbsp;→</button>
+  </div>`;
+}
+
+/* ---------- question steps ---------- */
+function renderSection(si){
+  const s = SECTIONS[si];
+  let html = `
+  <div class="stephead">
+    <div class="kicker">Section ${si+1} of ${SECTIONS.length}</div>
+    <h1>${esc(s.title)}</h1>
+    <p>${esc(s.desc)}</p>
+  </div>`;
+
+  s.qs.forEach((q,qi)=>{
+    const a = getAns(si,qi);
+    html += `<div class="qcard ${q.star?'star':''} ${a.agency?'deferred':''}" id="card_${qi}">`;
+    html += `<div class="qtop"><div class="qtext">`;
+    if(q.star) html += `<div class="starbadge">★ Most important</div>`;
+    html += `<div class="q">${esc(q.q)}</div>`;
+    if(q.hint) html += `<div class="hint">${esc(q.hint)}</div>`;
+    html += `</div>`;
+    if(!q.noAgency) html += `
+      <div class="agency ${a.agency?'on':''}" onclick="toggleAgency(${qi})" title="We'll decide this professionally on your behalf">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 2l2.9 6.26L21 9.27l-4.5 4.38L17.8 20 12 16.77 6.2 20l1.3-6.35L3 9.27l6.1-1.01z"/></svg>
+        ${AGENCY_LABEL}
+      </div>`;
+    html += `</div>`;
+    html += `<div class="qbody">`;
+
+    if(q.type==="single" || q.type==="multi"){
+      html += `<div class="chips">`;
+      q.options.forEach((opt,oi)=>{
+        const sel = a.sel.includes(opt);
+        html += `<span class="chip ${sel?'sel':''}" onclick="pick(${qi},${oi})">${esc(opt)}</span>`;
+      });
+      if(q.other) html += `<span class="chip ${a.sel.includes('__other')?'sel':''}" onclick="pickOther(${qi})">Other…</span>`;
+      html += `</div>`;
+      if(q.other && a.sel.includes("__other")){
+        html += `<div class="detail"><label>${esc(q.otherLabel || "Tell us the “other”")}</label>
+          <input type="text" value="${esc(a.text)}" oninput="setText(${qi},this.value)"></div>`;
+      }
+    } else if(q.type==="text"){
+      html += `<input type="text" value="${esc(a.text)}" oninput="setText(${qi},this.value)">`;
+    } else {
+      html += `<textarea oninput="setText(${qi},this.value)" placeholder="Type here…">${esc(a.text)}</textarea>`;
+    }
+
+    if(q.detail){
+      const req = !!q.detailRequired;
+      html += `<div class="detail"><label>${esc(q.detail)}${req?' <span style="color:var(--accent);font-weight:700">(required)</span>':''}</label>
+        <textarea style="min-height:${req?'88':'60'}px" oninput="setDetail(${qi},this.value)" placeholder="${req?'Required — please fill this in':'Optional'}">${esc(a.detail)}</textarea></div>`;
+    }
+    html += `</div>`;
+    if(!q.noAgency) html += `<div class="defnote">★ Left to AIxAI — we'll make the professional call on this. Add a note above if you'd like to steer us.</div>`;
+    html += `</div>`;
+  });
+
+  html += `<div class="navrow">
+    <button onclick="go(${si-1})">←&nbsp; Back</button>
+    <span class="spacer"></span>
+    <span class="savenote">Progress saves automatically</span>`;
+  if(si === SECTIONS.length-1){
+    html += `<button class="submitbtn" onclick="trySubmit(this)">Submit questionnaire &nbsp;✓</button>`;
+  } else {
+    html += `<button class="primary" onclick="next(${si})">Next &nbsp;→</button>`;
+  }
+  html += `</div><div class="errmsg" id="err"></div>`;
+  panel.innerHTML = html;
+  /* NOTE: no scrollTo here — re-renders triggered by answering must keep the
+     user's scroll position. Scrolling to top happens only in go(). */
+}
+
+/* ---------- interactions ---------- */
+let curSection = 0;
+function pick(qi,oi){
+  const q = SECTIONS[curSection].qs[qi];
+  const a = getAns(curSection,qi);
+  const opt = q.options[oi];
+  if(q.type==="single"){ a.sel = a.sel.includes(opt) ? [] : [opt]; }
+  else {
+    const i = a.sel.indexOf(opt);
+    if(i>=0) a.sel.splice(i,1); else a.sel.push(opt);
+  }
+  a.agency = false;
+  save(); renderSection(curSection);
+}
+function pickOther(qi){
+  const q = SECTIONS[curSection].qs[qi];
+  const a = getAns(curSection,qi);
+  const i = a.sel.indexOf("__other");
+  if(i>=0) a.sel.splice(i,1);
+  else if(q.type==="single") a.sel = ["__other"];   // exclusive for single-choice
+  else a.sel.push("__other");
+  a.agency=false; save(); renderSection(curSection);
+}
+function setText(qi,v){ const a=getAns(curSection,qi); a.text=v; save(); }
+function setDetail(qi,v){ const a=getAns(curSection,qi); a.detail=v; save(); }
+function toggleAgency(qi){
+  const a = getAns(curSection,qi);
+  a.agency = !a.agency;
+  save(); renderSection(curSection);
+}
+
+function go(step){
+  if(step > state.maxStep) return;   // can't jump ahead of validated progress
+  state.step = step; save();
+  renderSidebar();
+  window.scrollTo({top:0, behavior:"instant"});
+  if(step<0) return renderIntro();
+  curSection = step;
+  renderSection(curSection);
+}
+
+/* ---------- required-answer validation ---------- */
+function isAnswered(q, a){
+  if(!q.noAgency && a.agency) return true;
+  if(q.detailRequired && !(a.detail||"").trim()) return false;
+  if(q.type==="single" || q.type==="multi"){
+    if(a.sel.length===0) return false;
+    if(a.sel.includes("__other") && !(a.text||"").trim()) return false;
+    return true;
+  }
+  return !!((a.text||"").trim());
+}
+function validateSection(si){
+  const s = SECTIONS[si];
+  for(let qi=0; qi<s.qs.length; qi++){
+    if(!isAnswered(s.qs[qi], getAns(si,qi))) return qi;
+  }
+  return -1;
+}
+function showUnanswered(si, firstBad){
+  const s = SECTIONS[si];
+  s.qs.forEach((q,qi)=>{
+    const card = document.getElementById("card_"+qi);
+    if(card) card.classList.toggle("unanswered", !isAnswered(q, getAns(si,qi)));
+  });
+  const err = document.getElementById("err");
+  if(err){
+    err.style.display="block";
+    err.textContent = "Please answer the highlighted questions before continuing" +
+      (s.qs.some(q=>!q.noAgency) ? " — or mark them “"+AGENCY_LABEL+"”." : ".");
+  }
+  const el = document.getElementById("card_"+firstBad);
+  if(el) el.scrollIntoView({behavior:"smooth", block:"center"});
+}
+function next(si){
+  const bad = validateSection(si);
+  if(bad >= 0){ showUnanswered(si, bad); return; }
+  state.maxStep = Math.max(state.maxStep, si+1); save();
+  go(si+1);
+}
+function trySubmit(btn){
+  const bad = validateSection(curSection);
+  if(bad >= 0){ showUnanswered(curSection, bad); return; }
+  finalSubmit(btn);
+}
+
+/* ---------- submit ---------- */
+function collect(){
+  const answers = [];
+  SECTIONS.forEach((s,si)=>{
+    s.qs.forEach((q,qi)=>{
+      const a = getAns(si,qi);
+      let answer = "";
+      if(q.type==="single"||q.type==="multi"){
+        const sels = a.sel.filter(x=>x!=="__other");
+        if(a.sel.includes("__other") && a.text) sels.push("Other: "+a.text);
+        answer = sels.join("; ");
+      } else answer = a.text;
+      if(a.detail) answer += (answer? " | " : "") + "Details: " + a.detail;
+      answers.push({ section: s.title, q: q.q, answer: a.agency ? (a.detail||"") : answer, agency: a.agency });
+    });
+  });
+  return { contact: {}, answers, submittedAt: new Date().toISOString() };
+}
+
+async function finalSubmit(btn){
+  btn.disabled = true; btn.textContent = "Submitting…";
+  try{
+    const res = await fetch("/api/submit",{
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify(collect())
+    });
+    const j = await res.json();
+    if(!j.ok) throw new Error(j.error||"failed");
+    localStorage.removeItem(LS_KEY);
+    panel.innerHTML = `<div class="done">
+      <div class="tick">✓</div>
+      <h1>Thank you!</h1>
+      <p>Your answers are with us. We now have a complete picture of your business — we'll come back shortly with a clear plan, and we'll be in touch if anything needs a quick chat.</p>
+      <p style="margin-top:26px;font-size:13px;color:#B4B0A8">— Team AIxAI</p>
+    </div>`;
+    document.getElementById("progFill").style.width="100%";
+    document.getElementById("progText").textContent="Done";
+    window.scrollTo({top:0});
+  }catch(e){
+    btn.disabled=false; btn.textContent="Submit questionnaire ✓";
+    const err = document.getElementById("err");
+    err.style.display="block";
+    err.textContent="Could not submit — please check your connection and try again. (Your answers are safe in this browser.)";
+  }
+}
+
+/* ---------- boot ---------- */
+renderSidebar();
+go(Math.min(state.step==null ? -1 : state.step, state.maxStep));
+</script>
+</body>
+</html>
